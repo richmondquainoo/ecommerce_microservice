@@ -1,4 +1,4 @@
-package com.programmingtechie.inventoryservice.controller;
+
 
 import com.programmingtechie.inventoryservice.dto.InventoryResponse;
 import com.programmingtechie.inventoryservice.service.InventoryService;
