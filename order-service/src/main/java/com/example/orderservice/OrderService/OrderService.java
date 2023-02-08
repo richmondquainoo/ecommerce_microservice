@@ -1,6 +1,6 @@
 package com.example.orderservice.OrderService;
 
-import com.programmingtechie.inventoryservice.dto.InventoryResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,28 +15,31 @@ import java.util.UUID;
 @Transactional
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public void createOrder(OrderRequest orderRequest){
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
 
+        System.out.print("The order request " + orderRequest);
+
         List<OrderLineItem> orderLineItem = orderRequest.getOrderLineItemList();
 
         order.setOrderLineItemList(orderLineItem);
 
+        System.out.print("The order is " + order);
+
         orderRepository.save(order);
+        // orderRepository.saveOrderRequest(orderRequest);
 
-
-        List<String> product = order.getOrderLineItemList().stream()
+        List<String> products = order.getOrderLineItemList().stream()
                 .map(OrderLineItem::getProduct)
                 .toList();
 
-        // Call Inventory Service, and place order if product is in
-        // stock
-        InventoryResponse[] inventoryResponseArray = webClient.get()
-                .uri("http://localhost:8082/api/inventory",
-                        uriBuilder -> uriBuilder.queryParam("product", product).build())
+        // Call Inventory Service, and place order if product is in stock
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory",
+                        uriBuilder -> uriBuilder.queryParam("product", products).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
                 .block();
