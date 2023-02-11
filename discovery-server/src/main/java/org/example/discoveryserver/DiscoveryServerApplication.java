@@ -11,6 +11,5 @@ import org.springframework.context.annotation.Bean;
 public class DiscoveryServerApplication {
     public static void main(String[] args) {
 
-      git 
     }
 }
